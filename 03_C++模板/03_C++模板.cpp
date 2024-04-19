@@ -1,42 +1,42 @@
 #include<iostream>
 
 
-//=========================================================== 1.C++����ģ�� =====================================
+//=========================================================== 1.C++函数模板 =====================================
 /*
-C++����ģ��
-ģ������壺������Ҳ���Խ��в�����   ��=========================  ��ģ���ڿ������ʱ��ܳ��ã�
+C++函数模板
+模板的意义：对类型也可以进行参数化   《=========================  （模板在开发库的时候很常用）
 int sum(int a,int b)(return a+b);
 
 
-����ģ��               ��============ �ǲ����б���ģ���Ϊ���Ͳ�֪��
-ģ���ʵ����        ��============  �������õ����ʵ����
-ģ�庯��               ��============   ����Ҫ���������������
+函数模板               《============ 是不进行编译的，因为类型不知道
+模板的实例化        《============  函数调用点进行实例化
+模板函数               《============   才是要被编译器所编译的
  
-ģ�����Ͳ���         typename/class
-ģ������Ͳ���
+模板类型参数         typename/class
+模板非类型参数
 
-ģ���ʵ������                ====��      ���Ը����û������ʵ�ε����ͣ����Ƶ���ģ�����Ͳ����ľ�������
-ģ�����������ר�û���   ====��      ���⣨���Ǳ������ṩ�ģ������û��ṩ�ģ���ʵ����
-����ģ�塢ģ�������������ģ�庯�������ع�ϵ
+模板的实参推演                ====》      可以根据用户传入的实参的类型，来推导出模板类型参数的具体类型
+模板的特例化（专用化）   ====》      特殊（不是编译器提供的，而是用户提供的）的实例化
+函数模板、模板的特例化、非模板函数的重载关系
 
 
-[ģ������ǲ��ܹ���һ���ļ��ж���ģ�������һ���ļ�ʹ�õ�]
-ģ��������ǰ��һ��Ҫ����ģ�嶨��ĵط��������Ļ���ģ����ܹ�����������ʵ�����������ܹ�������������Ĵ���
+[模板代码是不能够在一个文件中定义的，在另外一个文件使用的]
+模板代码调用前，一定要看到模板定义的地方，这样的话，模板才能够进行正常的实例化，产生能够被编译器编译的代码
 
-���ԣ�ģ����붼�Ƿ���ͷ�ļ����еģ�Ȼ����Դ�ļ�����ֱ�ӽ���#include����
+所以，模板代码都是放在头文件当中的，然后在源文件当中直接进行#include包含
 */
 
 #if 0
-// ����ģ��
-template<typename T>    //����һ��ģ������б�   typename����classҲ����
-bool compare(T a, T b)      // compares��һ������ģ��
+// 函数模板
+template<typename T>    //定义一个模板参数列表   typename，用class也可以
+bool compare(T a, T b)      // compares是一个函数模板
 {
 	std::cout << "tempalte compare" << std::endl;
 	return a > b;
 }
 
-// ģ���������
-// ���compare����ģ�壬�ṩconst char*���͵��������汾
+// 模板的特例化
+// 针对compare函数模板，提供const char*类型的特例化版本
 template<>
 bool compare<const char*>(const char* a, const char* b)
 {
@@ -44,8 +44,8 @@ bool compare<const char*>(const char* a, const char* b)
 	return strcmp(a, b) > 0;
 }
 
-// ��ģ�庯��
-// ��ģ�庯�� - ��ͨ���� 
+// 非模板函数
+// 非模板函数 - 普通函数 
 bool compare(const char* a, const char* b)
 {
 	std::cout << "normal compare" << std::endl;
@@ -54,33 +54,33 @@ bool compare(const char* a, const char* b)
 
 int main()
 {
-	// �������õ�
+	// 函数调用点
 	compare<int>(10, 20);
 	compare<double>(10.0, 21.0);
 
-	// ����ģ��ʵ�ε�����
+	// 函数模板实参的推演
 	compare(10, 20);
 
 
-	// ��compare�� : δ�ҵ�ƥ������غ���     û��������б�ƥ��ĺ���ģ��"compare"ʵ��
+	// “compare” : 未找到匹配的重载函数     没有与参数列表匹配的函数模板"compare"实例
 	// compare(10, 20.8);
-	compare<int>(10, 20.8);  //���ǿ����ֶ�ָ����������     ���ӡ�double��ת������T�������ܶ�ʧ���ݣ�
+	compare<int>(10, 20.8);  //但是可以手动指定参数类型     （从“double”转换到“T”，可能丢失数据）
 
 
-	// ����ģ��ʵ�ε����� T ===�� const char* 
-	// ����ĳЩ������˵������������Ĭ��ʵ������ģ����룬���봦���߼��ǲ����ϵģ������⣩
-	// ���������Ȱ�compare�����ɺ������֣�û�еĻ�����ȥ��compareģ��
+	// 函数模板实参的推演 T ===》 const char* 
+	// 对于某些类型来说，依赖编译器默认实例化的模板代码，代码处理逻辑是不符合的（有问题）
+	// 编译器优先把compare处理成函数名字，没有的话，才去找compare模板
 	compare("aaa", "bbb");    
 
-	//compare("aaa", "bbb");    // ����з�ģ�庯�������������ȵ��÷�ģ�庯��
+	//compare("aaa", "bbb");    // 如果有非模板函数，编译器优先调用非模板函数
 
 	return 0;
 }
 #endif
 
 /*
-�ں������õ㣬���������û�ָ�������ͣ���ԭģ��ʵ����һ�ݺ����������  ==�� ģ�庯��
-ģ�庯����
+在函数调用点，编译器用用户指定的类型，从原模板实例化一份函数代码出来  ==》 模板函数
+模板函数：
 bool compare<int>(int a,int b)
 {
 	return a>b;
@@ -93,28 +93,28 @@ bool compare<double>(double a,double b)
 
 bool compare<const char*>(const char* a,const char* b)
 {
-	return a>b;         // �����⣺ֻ�ǱȽ�������ַ��������   ����� return strcmp(a,b)>0;
+	return a>b;         // 有问题：只是比较两个地址！！！！   应该是 return strcmp(a,b)>0;
 }
 
 */
 
 
-//=========================================================== 2.C++ ��ģ�� =====================================
+//=========================================================== 2.C++ 类模板 =====================================
 /*
-����ģ��
-ģ��ķ����Ͳ���     �������������ͣ��������ߵ�ַ/���ö����ԣ�       ���ǳ�����ֻ��ʹ�ã��������޸�
+函数模板
+模板的非类型参数     必须是整数类型（整数或者地址/引用都可以）       都是常量，只能使用，而不能修改
 
-��ģ��   +===�� ʵ����   ====��  ģ���� 
+类模板   +===》 实例化   ====》  模板类 
 
 */
 
 #if 0
-//��ģ��
-template<typename T=int>   // ��ģ�廹���Լ�Ĭ�ϲ���
-class SeqStack     // SeqStackΪģ���� + ���Ͳ����б� ==�� ������
+//类模板
+template<typename T=int>   // 类模板还可以加默认参数
+class SeqStack     // SeqStack为模板名 + 类型参数列表 ==》 类名称
 {
 public:
-	// ������������������Բ��ü�<T>Ҳ���ԣ���������ģ��ĵط������ϲ����б�
+	// 构造和析构函数名可以不用加<T>也可以，其他出现模板的地方都加上参数列表
 	SeqStack(int size=10) 
 		:_pstack(new T[size])
 		,_top(0)
@@ -134,37 +134,37 @@ public:
 		,_size(other._size)
 	{
 		_pstack = new T[other.size];
-		// ��Ҫ��memcpy���п�����������������Ȼ��ĳЩ����¿���ʹ��memcpy()�����������ڴ渴�ƣ�
-		// ���ڰ���ָ���̬�ڴ����Ķ���memcpy()������ȷ�������������캯����Ҫȷ������ʱ�����ʵ�����Դ�������Ա�����Դй©���ظ��ͷţ�
+		// 不要用memcpy进行拷贝！！！！！（虽然在某些情况下可以使用memcpy()函数来进行内存复制，
+		// 对于包含指针或动态内存分配的对象，memcpy()不能正确处理。拷贝构造函数需要确保复制时进行适当的资源管理，以避免资源泄漏或重复释放）
 		for (int i = 0; i < top; i++)
 		{
-			_pstack[i] = other._pstack[i];     // ����ö���ĸ�ֵ��������غ���
+			_pstack[i] = other._pstack[i];     // 会调用对象的赋值运算符重载函数
 		}
 	}
 
 	SeqStack<T>& operator=(const SeqStack<T>& other)
 	{
-		if (this == &other)   // ��ֹ�Ը�ֵ
+		if (this == &other)   // 防止自赋值
 		{
 			return *this;
 		}
 
-		delete[] _pstack;    // �ͷ�ԭ��ռ�õ��ڴ�
+		delete[] _pstack;    // 释放原先占用的内存
 
 		_top = other._top;
 		_size = other._size;
 		_pstack = new T[_size];
-		// ��Ҫ��memcpy���п�����������������Ȼ��ĳЩ����¿���ʹ��memcpy()�����������ڴ渴�ƣ�
-		// ���ڰ���ָ���̬�ڴ����Ķ���memcpy()������ȷ�������������캯����Ҫȷ������ʱ�����ʵ�����Դ�������Ա�����Դй©���ظ��ͷţ�
+		// 不要用memcpy进行拷贝！！！！！（虽然在某些情况下可以使用memcpy()函数来进行内存复制，
+		// 对于包含指针或动态内存分配的对象，memcpy()不能正确处理。拷贝构造函数需要确保复制时进行适当的资源管理，以避免资源泄漏或重复释放）
 		for (int i = 0; i < top; i++)
 		{
-			_pstack[i] = other._pstack[i];     // ����ö���ĸ�ֵ��������غ���
+			_pstack[i] = other._pstack[i];     // 会调用对象的赋值运算符重载函数
 		}
 
 		return *this;
 	}
 
-	void push(const T& val);     // ��ջ����
+	void push(const T& val);     // 入栈操作
 	//{
 	//	if (full())
 	//		expand();
@@ -172,28 +172,28 @@ public:
 	//	_pstack[_top++] = val;
 	//}
 
-	void pop()       // ��ջ����
+	void pop()       // 出栈操作
 	{
 		if (empty())
 			return;
 		--_top;
 	}
 
-	T top() const    // ����ջ��Ԫ��
+	T top() const    // 返回栈顶元素
 	{
 		if (empty())
-			throw "stack is empty";   //�׳��쳣Ҳ���������߼�����
+			throw "stack is empty";   //抛出异常也代表函数逻辑结束
 		return _pstack[_top - 1];
 	}
-	bool full() const { return _top == _size; }  // ջ��
-	bool empty() const { return _top == 0; }     // ջ��
+	bool full() const { return _top == _size; }  // 栈满
+	bool empty() const { return _top == 0; }     // 栈空
 
 private:
 	T* _pstack;
 	int _top;
 	int _size;
 
-	// ˳��ջ�ײ����鰴2���ķ�ʽ����
+	// 顺序栈底层数组按2倍的方式扩容
 	void expand()
 	{
 		T* ptmp = new T[_size * 2];
@@ -207,7 +207,7 @@ private:
 	}
 };
 
-// ����ʵ��
+// 类外实现
 template<typename T>
 void SeqStack<T>::push(const T& val)
 {
@@ -220,8 +220,8 @@ void SeqStack<T>::push(const T& val)
 
 int main()
 {
-	// ��ģ���ѡ����ʵ����������Ҫʹ�õ����ĳЩ�����ǣ��Ż�ʵ������û���õ��ĺ������������������
-	// ģ����  class SeqStack<int>{};
+	// 类模板的选择性实例化（当需要使用到类的某些函数是，才会实例化，没用用到的函数编译器不会产生）
+	// 模板类  class SeqStack<int>{};
 	SeqStack<int> s1;
 	s1.push(32);
 	s1.push(92);
@@ -238,9 +238,9 @@ int main()
 }
 #endif
 
-//   ģ��ķ����Ͳ��� 
+//   模板的非类型参数 
 #if 0      
-template<typename T, int SIZE>   // int SIZE:ģ��ķ����Ͳ���
+template<typename T, int SIZE>   // int SIZE:模板的非类型参数
 void sort(T *arr)
 {
 	for (int i = 0; i < SIZE - 1; ++i)
@@ -261,7 +261,7 @@ void sort(T *arr)
 int main()
 {
 	int arr[] = { 12,5,7,32,89,21,35 };
-	const int size = sizeof(arr) / sizeof(arr[0]);   // size���붨��Ϊconst,����
+	const int size = sizeof(arr) / sizeof(arr[0]);   // size必须定义为const,常量
 	sort<int,size>(arr);
 	for(int val:arr)
 	{
@@ -274,76 +274,76 @@ int main()
 
 
 
-//======================================================= 3.C++ ��ģ�� ʵ��vector  �ռ�������allocator=====================================
+//======================================================= 3.C++ 类模板 实现vector  空间配置器allocator=====================================
 /*
-��ģ��  ==�� ʵ��һ��C++ STL �����һ��˳������  vector��������
+类模板  ==》 实现一个C++ STL 里面得一个顺序容器  vector向量容器
 
-������queue SeqStack
-�ռ�������allocator
+容器：queue SeqStack
+空间配置器allocator
 
-STL��vecor���壺
+STL的vecor定义：
 template<class _Ty>,class _Alloc = allocator<_Ty>> 
 class vector{};
 
-�����Ŀռ�������allocator ���ļ�����  �ڴ濪��/�ڴ��ͷ�    ������/��������
+容器的空间配置器allocator 做四件事情  内存开辟/内存释放    对象构造/对象析构
 */
 
 
-// �Զ���ռ�������  ���������Ŀռ�����������C++��׼���allocatorʵ��һ��
+// 自定义空间配置器  定义容器的空间配置器，和C++标准库的allocator实现一样
 template<typename T>
 class Allocator
 {
 public:
-	T* allocate(size_t size)  // �����ڴ濪��
+	T* allocate(size_t size)  // 负责内存开辟
 	{
 		return (T*)malloc(sizeof(T) * size);
 	}
 
-	void deallocate(void* p)  // �����ڴ��ͷ�
+	void deallocate(void* p)  // 负责内存释放
 	{
 		free(p);
 	}
 
-	void construct(T* p, const T& val)  //���������
+	void construct(T* p, const T& val)  //负责对象构造
 	{
-		new (p) T(val);   // ��λnew����ָ�����ڴ���ȥ����һ��ֵΪval�Ķ���
+		new (p) T(val);   // 定位new，在指定的内存上去构造一个值为val的对象
 	}
 
-	void destroy(T* p)         // �����������
+	void destroy(T* p)         // 负责对象析构
 	{
-		p->~T();             // ~T() ������T���͵���������
+		p->~T();             // ~T() 代表了T类型的析构函数
 	}
 };
 
 /*
-�����ײ��ڴ濪�٣��ڴ��ͷţ����������������ͨ��allocator�ռ�������ʵ��
+容器底层内存开辟，内存释放，对象构造和析构，都通过allocator空间配置器实现
 */
 template<typename T=int,typename Alloc = Allocator<T>>
 class vector
 {
 public:
-	//vector(int size=10,const Alloc& alloc = Allocator<T>())    // Ҳ�������û�������,����ʹ��Ĭ�ϵ�Allocator<T>
+	//vector(int size=10,const Alloc& alloc = Allocator<T>())    // 也可以让用户传进来,不传使用默认的Allocator<T>
 	//	:_allocator(alloc)
 
 	vector(int size=10)      // 
 	{
-		// ��Ҫ���ڴ濪�ٺͶ�����ֿ�����  [new�������������һ�����ˣ����Զ����������С�����Ķ��󣬾�����Щ�������ң�������Ҫ��]
+		// 需要把内存开辟和对象构造分开处理  [new运算符把这两步一起做了，会自动构造数组大小个数的对象，尽管这些对象不是我，我们想要的]
 		//_first = new T[size];
-		_first = _allocator.allocate(10);  // 10��Ԫ�ض���  �����ڴ�ռ�
+		_first = _allocator.allocate(10);  // 10个元素对象  开辟内存空间
 		_last = _first;
 		_end = _first+size;
 	}
 
 	~vector()
 	{
-		// ����������Ч��Ԫ�أ�Ȼ���ͷ�_firstָ��ֱ�ߵĶ��ڴ�  [delete]
+		// 析构容器有效的元素，然后释放_first指针直线的堆内存  [delete]
 		//delete[]_first;
 
-		for (T* p = _first; p != _last; ++p)   // ��_firstָ��ָ����������ЧԪ�ؽ�����������
+		for (T* p = _first; p != _last; ++p)   // 把_first指针指向的数组的有效元素进行析构操作
 		{
 			_allocator.destroy(p);
 		}
-		_allocator.deallocate(_first);   //�ͷŶ��ϵ������ڴ�
+		_allocator.deallocate(_first);   //释放堆上的数组内存
 		_first = _last = _end = nullptr;
 	}
 
@@ -368,11 +368,11 @@ public:
 			return *this;
 
 		//delete[]_first;
-		for (T* p = _first; p != _last; ++p)   // ��_firstָ��ָ����������ЧԪ�ؽ�����������
+		for (T* p = _first; p != _last; ++p)   // 把_first指针指向的数组的有效元素进行析构操作
 		{
 			_allocator.destroy(p);
 		}
-		_allocator.deallocate(_first);         //�ͷŶ��ϵ������ڴ�
+		_allocator.deallocate(_first);         //释放堆上的数组内存
 
 		int size = other._end - other._first;
 		//_first = new T[size];
@@ -390,33 +390,33 @@ public:
 	}
 
 
-	void push_back(const T& val)   // ������ĩβ����Ԫ��
+	void push_back(const T& val)   // 向容器末尾添加元素
 	{
 		if (full())
 		{
 			expand();
 		}
-		//*_last++ = val;   // �ȸ�ֵ ָ���1
-		_allocator.construct(_last, val);   // _lastָ��ָ����ڴ湹��һ��ֵΪval�Ķ���
+		//*_last++ = val;   // 先赋值 指针加1
+		_allocator.construct(_last, val);   // _last指针指向的内存构造一个值为val的对象
 		_last++;
 	}
 
-	void pop_back()      // ������ĩβɾ������
+	void pop_back()      // 从容器末尾删除容器
 	{
 		if (empty())
 		{
 			return;
 		}
 		//--_last;
-		--_last;         // ����Ҫ��_lastָ��--����Ҫ����ɾ����Ԫ��
+		--_last;         // 不仅要把_last指针--，还要析构删除的元素
 		_allocator.destroy(_last);
 	}
 	
-	T back()const   //��������ĩβ��Ԫ�ص�ֵ
+	T back()const   //返回容器末尾得元素的值
 	{
 		if (empty())
 		{
-			// ����һ��Ĭ��ֵ���׳��쳣���Ա�ʾ����Ϊ��
+			// 返回一个默认值或抛出异常，以表示容器为空
 			throw std::out_of_range("Vector is empty");
 		}
 		return *(_last - 1);
@@ -427,15 +427,15 @@ public:
 	bool empty() const { return _first == _last; }
 	int size() const { return _last - _first; }
 private:
-	T* _first;      // ָ��������ʼ��λ��
-	T* _last;       // ָ����������ЧԪ�صĺ��λ��
-	T* _end;        // ָ������ռ�ĺ��λ��
+	T* _first;      // 指向数组起始的位置
+	T* _last;       // 指向数组中有效元素的后继位置
+	T* _end;        // 指向数组空间的后继位置
 
-	Alloc _allocator;     //���������Ŀռ�����������
+	Alloc _allocator;     //定义容器的空间配置器对象
 
-	void expand()   // �����Ķ�������
+	void expand()   // 容器的二倍扩容
 	{
-		int size = _end - _first;   //ԭ��������С
+		int size = _end - _first;   //原来容器大小
 		//T* ptmp = new T[size * 2];
 		T* ptmp = _allocator.allocate(size * 2);
 
@@ -458,7 +458,7 @@ private:
 };
 
 
-// ��C++�У�ָ��� + 1 ���������Ǽ򵥵Ľ�ָ���ֵ�� 1�����ǻ���ָ��ָ������ͽ������ӡ�������ԣ� + 1 ������ʹָ����ǰ�ƶ�һ���洢��Ԫ�Ĵ�С��������һ��ƫ�ƣ����ƫ������ָ�������ȷ����
+// 在C++中，指针的 + 1 操作并不是简单的将指针的值加 1，而是基于指针指向的类型进行增加。具体而言， + 1 操作会使指针向前移动一个存储单元的大小，即增加一个偏移，这个偏移是由指针的类型确定的
 
 
 class Test
@@ -471,7 +471,7 @@ public:
 
 int main()
 {
-	// �����Զ����vector
+	// 测试自定义的vector
 	//vector<int> vec;
 	//for (int i = 0; i < 20; i++)
 	//{
@@ -484,7 +484,7 @@ int main()
 	//	vec.pop_back();
 	//}
 
-//	vector<Test> vec;   //���캯��ʹ�õ���new,Ĭ�ϻṹ��10��Test()����    ��============  ��������������߼���Ӧ��ֻ���ڴ�ռ䣬û�ж���
+//	vector<Test> vec;   //构造函数使用的是new,默认会构造10个Test()对象    《============  【定义空容器，逻辑上应该只有内存空间，没有对象】
 /*
 		Test() 
 		Test()
@@ -516,7 +516,7 @@ int main()
 	vec.push_back(t2);
 	vec.push_back(t3);
 	std::cout << "======================================" << std::endl;
-	vec.pop_back();   // ֻ��Ҫ��������      ====��  Ҫ�Ѷ�����������ڴ��ͷŷ��뿪�� ��delete���������¶������ˣ��ⲻ�����߼���
+	vec.pop_back();   // 只需要析构对象。      ====》  要把对象的析构和内存释放分离开， 【delete把这两件事都做完了，这不符合逻辑】
 	std::cout << "======================================" << std::endl;
 	/*
 	Test()
@@ -549,7 +549,7 @@ int main()
 	~Test()
 	~Test()
 
-	///////////  ʹ�ÿռ�������
+	///////////  使用空间配置器
 	Test()
 	Test()
 	Test()
@@ -567,7 +567,7 @@ int main()
 }
 
 
-// δ���ӿռ��������汾vector
+// 未添加空间配置器版本vector
 #if 0
 #include <iostream>
 
@@ -630,7 +630,7 @@ public:
 
 	T back() const {
 		if (empty()) {
-			// ����һ��Ĭ��ֵ���׳��쳣���Ա�ʾ����Ϊ��
+			// 返回一个默认值或抛出异常，以表示容器为空
 			throw std::out_of_range("Vector is empty");
 		}
 		return *(_last - 1);
