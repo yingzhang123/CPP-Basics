@@ -430,7 +430,7 @@ malloc开辟内存失败，是通过返回值和nullptr做比较；而new开辟�
 
 int main02()
 {
-    // new有多少中？
+    // new有多少种？
     int* p1 = new int(20);   // 抛出异常的new 
 
     int* p2 = new (std::nothrow) int;  // 不抛出异常的new，通过malloc一样，可以通过判断指针是否为空，判断内存是否开辟成功
