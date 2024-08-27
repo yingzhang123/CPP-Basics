@@ -791,7 +791,7 @@ public:
         _date.show();
     }
 
-    // 常成员方法    只要是只读操作的成员方法，一路实现成const常成员方法（这样普通对象常对象都能调用）   
+    // 常成员方法    只要是只读操作的成员方法，一律实现成const常成员方法（这样普通对象常对象都能调用）   
     void show() const    //打印商品私有的信息      const CGoods *this(this指针被修饰为const)
     {
         std::cout << "name:" << _name << std::endl;
@@ -837,7 +837,7 @@ int main()
     CGoods::showCGoodsCount();
 
     const CGoods good5("非买品商品5", 100, 35.0, 2019, 5, 12);
-     good5.show();   // good5.show()    CGoods*   <==== const CGoods *     ×    ===》 解决方法 ====》 将形参指针设为const CGoods*
+     good5.show();   // good5.show()    CGoods*   <==== const CGoods *     ×    ===》 解决方法 ====》 将形参指针设为const CGoods*     const对象不能调用非const成员函数
 
     // good5.show();   // good5.show()    CGoods*   <==== const CGoods *    
     return 0;
